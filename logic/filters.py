@@ -13,7 +13,6 @@ import utils
 
 
 class HueFilterBase:
-
     # Templates YAML
     templates_yaml = ''
 
@@ -62,7 +61,6 @@ class HueFilterBase:
 
 
 class HueIndexFilter(HueFilterBase):
-
     templates_yaml = '''
 bridge_failed:
   title: Failed to connect to bridge.
@@ -159,12 +157,16 @@ all_lights:
 
 
 class HueActionFilter(HueFilterBase):
-
     templates_yaml = '''
 set_color:
   title: Set color…
   subtitle: Accepts 6-digit hex colors or CSS literal color names (e.g. "blue")
   icon: color.png
+
+set_blinker:
+  title: Set blinker
+  subtitle: Set this light or group as timer blinker
+  icon: rename.png
 
 color_picker:
   title: Use color picker…
@@ -229,6 +231,19 @@ save_scene:
 
         if len(control) is 1:
             self.partial_query = control[0]
+
+            if type == self.GROUP_TYPE:
+                self._add_item(
+                    'set_blinker',
+                    arg='group:%s:blinker:' % id,
+                    valid=True
+                )
+            else:
+                self._add_item(
+                    'set_blinker',
+                    arg='lights:%s:blinker:' % id,
+                    valid=True
+                )
 
             if type == self.GROUP_TYPE or is_on:
                 self._add_item(
@@ -463,6 +478,6 @@ def main(workflow):
 
 if __name__ == '__main__':
     workflow = Workflow(update_settings={
-        'github_slug': 'benknight/hue-alfred-workflow',
+        'github_slug': 'fatih-yavuz/hue-alfred-workflow',
     })
     sys.exit(workflow.run(main))
